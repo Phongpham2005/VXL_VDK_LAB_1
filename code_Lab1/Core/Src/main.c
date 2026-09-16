@@ -42,14 +42,26 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+uint8_t pa1_state = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 /* USER CODE BEGIN PFP */
+void Delay_With_Blink(uint8_t seconds)
+{
+  for (uint8_t i = 0; i < seconds; i++)
+  {
+    // Đặt trạng thái cho PA1 dựa theo cờ pa1_state
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, (pa1_state == 0) ? GPIO_PIN_RESET : GPIO_PIN_SET);
 
+    // Đảo trạng thái cờ cho giây tiếp theo
+    pa1_state = !pa1_state;
+
+    HAL_Delay(1000);
+  }
+}
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -86,44 +98,28 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-  int time = 0;
-  int flag = 0;
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if ( !flag ) {
-		  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_1, RESET ) ;
-		  flag = 1;
-	  }
-	  else if( flag ){
-		  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_1, SET ) ;
-		  flag = 0;
-	  }
-	  if (time >= 0 && time < 5){
-		  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_5, RESET ) ;
-		  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_6, SET ) ;
-		  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_7, SET ) ;
-		  time += 1;
-	  }
-	  else if (time >= 5 && time < 7){
-		  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_5, SET ) ;
-		  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_6, RESET ) ;
-		  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_7, SET ) ;
-		  time += 1;
-	  }
-	  else {
-		  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_5, SET ) ;
-	  	  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_6, SET ) ;
-	  	  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_7, RESET ) ;
-	  	  time += 1;
-	  	  if (time == 10){
-	  		  time = 0;
-	  	  }
-	  }
-	  HAL_Delay (1000) ;
+	      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_9 | GPIO_PIN_10, GPIO_PIN_SET);
+	      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7 | GPIO_PIN_8, GPIO_PIN_RESET);
+	      Delay_With_Blink(5);
+
+	      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
+	      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);
+	      Delay_With_Blink(2);
+
+	      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6 | GPIO_PIN_8, GPIO_PIN_SET);
+	      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_10, GPIO_PIN_RESET);
+	      Delay_With_Blink(5);
+
+	      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_SET);
+	      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_RESET);
+	      Delay_With_Blink(2);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -179,10 +175,13 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, BLINKINGH_LED_Pin|RED_LED_Pin|YELLOW_LED_Pin|GREEN_LED_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, BLINKINGH_LED_Pin|RED_LED_Pin|YELLOW_LED_Pin|GREEN_LED_Pin
+                          |GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : BLINKINGH_LED_Pin RED_LED_Pin YELLOW_LED_Pin GREEN_LED_Pin */
-  GPIO_InitStruct.Pin = BLINKINGH_LED_Pin|RED_LED_Pin|YELLOW_LED_Pin|GREEN_LED_Pin;
+  /*Configure GPIO pins : BLINKINGH_LED_Pin RED_LED_Pin YELLOW_LED_Pin GREEN_LED_Pin
+                           PA8 PA9 PA10 */
+  GPIO_InitStruct.Pin = BLINKINGH_LED_Pin|RED_LED_Pin|YELLOW_LED_Pin|GREEN_LED_Pin
+                          |GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
