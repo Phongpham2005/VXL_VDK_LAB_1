@@ -86,6 +86,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
+  int time = 0;
   int flag = 0;
   /* USER CODE END 2 */
 
@@ -93,18 +94,36 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if (flag == 0){
-		  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_5, SET ) ;
-		  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_6, RESET ) ;
+	  if ( !flag ) {
+		  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_1, RESET ) ;
 		  flag = 1;
 	  }
-	  else if (flag == 1){
-		  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_5, RESET ) ;
-		  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_6, SET ) ;
+	  else if( flag ){
+		  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_1, SET ) ;
 		  flag = 0;
 	  }
-
-	  HAL_Delay (2000) ;
+	  if (time >= 0 && time < 5){
+		  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_5, RESET ) ;
+		  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_6, SET ) ;
+		  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_7, SET ) ;
+		  time += 1;
+	  }
+	  else if (time >= 5 && time < 7){
+		  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_5, SET ) ;
+		  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_6, RESET ) ;
+		  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_7, SET ) ;
+		  time += 1;
+	  }
+	  else {
+		  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_5, SET ) ;
+	  	  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_6, SET ) ;
+	  	  HAL_GPIO_WritePin ( GPIOA , GPIO_PIN_7, RESET ) ;
+	  	  time += 1;
+	  	  if (time == 10){
+	  		  time = 0;
+	  	  }
+	  }
+	  HAL_Delay (1000) ;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -160,10 +179,10 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, RED_LED_Pin|YELLOW_LED_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, BLINKINGH_LED_Pin|RED_LED_Pin|YELLOW_LED_Pin|GREEN_LED_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : RED_LED_Pin YELLOW_LED_Pin */
-  GPIO_InitStruct.Pin = RED_LED_Pin|YELLOW_LED_Pin;
+  /*Configure GPIO pins : BLINKINGH_LED_Pin RED_LED_Pin YELLOW_LED_Pin GREEN_LED_Pin */
+  GPIO_InitStruct.Pin = BLINKINGH_LED_Pin|RED_LED_Pin|YELLOW_LED_Pin|GREEN_LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
