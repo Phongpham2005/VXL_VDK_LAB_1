@@ -72,6 +72,12 @@ void setNumberOnClock(int num)
     if (num < 0 || num > 11) return;
     HAL_GPIO_WritePin(GPIOA, (uint16_t)(1 << (num + 4)), GPIO_PIN_RESET);
 }
+
+void clearNumberOnClock(int num)
+{
+    if (num < 0 || num > 11) return;
+    HAL_GPIO_WritePin(GPIOA, (uint16_t)(1 << (num + 4)), GPIO_PIN_SET);
+}
 /* USER CODE END 0 */
 
 /**
@@ -110,11 +116,12 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	      for (int i = 0; i < 12; i++)
-	      {
-	          setNumberOnClock(i);
-	          HAL_Delay(500);
-	      }
+	  for (int i = 0; i < 12; i++)
+	  {
+	      setNumberOnClock(i);
+	      HAL_Delay(500);
+	      clearNumberOnClock(i);
+	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -173,7 +180,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOA, BLINKINGH_LED_Pin|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6
                           |GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10
                           |GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14
-                          |GPIO_PIN_15, GPIO_PIN_RESET);
+                          |GPIO_PIN_15, GPIO_PIN_SET);
 
   /*Configure GPIO pins : BLINKINGH_LED_Pin PA4 PA5 PA6
                            PA7 PA8 PA9 PA10
