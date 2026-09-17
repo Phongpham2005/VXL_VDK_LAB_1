@@ -1,6 +1,7 @@
-main.c:65:6:display7SEG	24	static
-main.c:78:6:Delay_With_Countdown	24	static
-main.c:99:5:main	8	static
-main.c:157:6:SystemClock_Config	72	static
-main.c:193:13:MX_GPIO_Init	32	static
-main.c:237:6:Error_Handler	4	static,ignoring_inline_asm
+main.c:65:6:display7SEG_H1_3	24	static
+main.c:77:6:display7SEG_H2_4	24	static
+main.c:89:6:Delay_Countdown	32	static
+main.c:119:5:main	8	static
+main.c:177:6:SystemClock_Config	72	static
+main.c:213:13:MX_GPIO_Init	32	static
+main.c:263:6:Error_Handler	4	static,ignoring_inline_asm
