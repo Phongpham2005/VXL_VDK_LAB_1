@@ -44,6 +44,14 @@
 /* USER CODE BEGIN PV */
 uint8_t pa1_state = 0;
 
+int hour = 2;
+int minute = 58;
+int second = 30;
+
+int prev_hour_led   = -1;
+int prev_minute_led = -1;
+int prev_second_led = -1;
+
 const uint16_t LED_PINS[12] = {
     GPIO_PIN_4,  GPIO_PIN_5,  GPIO_PIN_6,  GPIO_PIN_7, GPIO_PIN_8,  GPIO_PIN_9,  GPIO_PIN_10, GPIO_PIN_11, GPIO_PIN_12, GPIO_PIN_13, GPIO_PIN_14, GPIO_PIN_15
 };
@@ -78,6 +86,39 @@ void clearNumberOnClock(int num)
     if (num < 0 || num > 11) return;
     HAL_GPIO_WritePin(GPIOA, (uint16_t)(1 << (num + 4)), GPIO_PIN_SET);
 }
+
+void displayClock(int h, int m, int s)
+{
+    int curr_hour_led   = h % 12;
+    int curr_minute_led = (m / 5) % 12;
+    int curr_second_led = (s / 5) % 12;
+
+    if (prev_second_led != -1 && prev_second_led != curr_second_led &&
+        prev_second_led != curr_minute_led && prev_second_led != curr_hour_led)
+    {
+        clearNumberOnClock(prev_second_led);
+    }
+
+    if (prev_minute_led != -1 && prev_minute_led != curr_minute_led &&
+        prev_minute_led != curr_second_led && prev_minute_led != curr_hour_led)
+    {
+        clearNumberOnClock(prev_minute_led);
+    }
+
+    if (prev_hour_led != -1 && prev_hour_led != curr_hour_led &&
+        prev_hour_led != curr_second_led && prev_hour_led != curr_minute_led)
+    {
+        clearNumberOnClock(prev_hour_led);
+    }
+
+    setNumberOnClock(curr_second_led);
+    setNumberOnClock(curr_minute_led);
+    setNumberOnClock(curr_hour_led);
+
+    prev_second_led = curr_second_led;
+    prev_minute_led = curr_minute_led;
+    prev_hour_led   = curr_hour_led;
+}
 /* USER CODE END 0 */
 
 /**
@@ -110,18 +151,43 @@ int main(void)
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
 
+  clearAllClock();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  for (int i = 0; i < 12; i++)
-	  {
-	      setNumberOnClock(i);
-	      HAL_Delay(500);
-	      clearNumberOnClock(i);
-	  }
+	      displayClock(hour, minute, second);
+
+	      if (pa1_state == 0)
+	      {
+	        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET);
+	        pa1_state = 1;
+	      }
+	      else
+	      {
+	        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_SET);
+	        pa1_state = 0;
+	      }
+
+	      HAL_Delay(200);
+	      second++;
+	      if (second >= 60)
+	      {
+	        second = 0;
+	        minute++;
+	        if (minute >= 60)
+	        {
+	          minute = 0;
+	          hour++;
+	          if (hour >= 24)
+	          {
+	            hour = 0;
+	          }
+	        }
+	      }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
